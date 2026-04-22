@@ -342,7 +342,6 @@
         document.getElementById('datetime').value = now.toISOString().slice(0, 19);
         
         if(window.updateDisplay) window.updateDisplay();
-        alert('✨ ล้างข้อมูลกลับเป็นค่าเริ่มต้นเรียบร้อยแล้ว');
     };
 
     window.saveFavorite = function() {
@@ -358,6 +357,7 @@
             sticker: document.getElementById('imageSelect') ? document.getElementById('imageSelect').value : ''
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(favData));
+        alert('⭐ บันทึกรายการนี้เป็น "รายการโปรด" เรียบร้อยแล้ว!');
     };
 
     window.loadFavorite = function() {
