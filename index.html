@@ -25,7 +25,6 @@
             --text-main: #ffffff; 
             --text-muted: #cbd5e1;
             
-
             --cimb-primary: #ed1c24; 
             --cimb-secondary: #7e1f2d; 
             --cimb-hover: #c4121a;
@@ -155,6 +154,22 @@
       <div class="row g-3">
         
         <div class="col-lg-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                <div class="text-warning fw-medium" style="font-size: 0.85rem;"><i class="bi bi-lightning-charge-fill"></i> เมนูด่วน</div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-danger py-1 px-2" style="font-size: 0.75rem;" onclick="clearForm()" title="ล้างค่าทั้งหมด">
+                        <i class="bi bi-trash"></i> ล้าง
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size: 0.75rem;" onclick="saveFavorite()" title="บันทึกรายการปัจจุบัน">
+                        <i class="bi bi-bookmark-plus"></i> บันทึกไว้
+                    </button>
+                    <button class="btn btn-sm btn-warning py-1 px-2 fw-bold text-dark" style="font-size: 0.75rem;" onclick="loadFavorite()" title="โหลดรายการที่บันทึกไว้">
+                        <i class="bi bi-star-fill"></i> ใช้รายการโปรด
+                    </button>
+                </div>
+            </div>
+
             <div class="alert-custom">
                  XX-XXXX000-0 ㅤㅤㅤㅤ(10ตัว)<br>
                  XXXX-XXXX000-0 ㅤㅤㅤㅤ(12ตัว)<br>
@@ -299,6 +314,80 @@
             window.updateDisplay();
         }
     }
+
+    // --------------------------------------------------------
+    // ฟังก์ชัน: การจัดการ เมนูด่วน (Clear / Save / Load)
+    // --------------------------------------------------------
+    const STORAGE_KEY = 'slipFav_CIMB_1';
+
+    window.clearForm = function() {
+        if(document.getElementById('AideMemoire')) document.getElementById('AideMemoire').value = 'ค่าเหล้า ค่าเบียร์';
+        if(document.getElementById('sendername')) document.getElementById('sendername').value = 'น.ส. ยูรีนา อาดตันตรา';
+        if(document.getElementById('senderaccount')) document.getElementById('senderaccount').value = 'XX-XXXX1549';
+        if(document.getElementById('receivername')) document.getElementById('receivername').value = 'นาย กบ เขียด';
+        if(document.getElementById('receiveraccount')) document.getElementById('receiveraccount').value = 'XX-XXXX142-6';
+        if(document.getElementById('amount11')) document.getElementById('amount11').value = '3,300.00';
+        
+        if(document.getElementById('bank')) document.getElementById('bank').value = 'ธ.ซีไอเอ็มบีไทย';
+        if(document.getElementById('imageSelect')) document.getElementById('imageSelect').selectedIndex = 0;
+        
+        const mc = document.getElementById('modeSwitch');
+        if(mc && mc.checked) {
+            mc.checked = false;
+            toggleMode();
+        }
+        
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('datetime').value = now.toISOString().slice(0, 19);
+        
+        if(window.updateDisplay) window.updateDisplay();
+        alert('✨ ล้างข้อมูลกลับเป็นค่าเริ่มต้นเรียบร้อยแล้ว');
+    };
+
+    window.saveFavorite = function() {
+        const favData = {
+            noteMode: document.getElementById('modeSwitch') ? document.getElementById('modeSwitch').checked : false,
+            noteText: document.getElementById('AideMemoire') ? document.getElementById('AideMemoire').value : '',
+            sName: document.getElementById('sendername') ? document.getElementById('sendername').value : '',
+            sAccount: document.getElementById('senderaccount') ? document.getElementById('senderaccount').value : '',
+            rName: document.getElementById('receivername') ? document.getElementById('receivername').value : '',
+            rAccount: document.getElementById('receiveraccount') ? document.getElementById('receiveraccount').value : '',
+            bank: document.getElementById('bank') ? document.getElementById('bank').value : '',
+            amount: document.getElementById('amount11') ? document.getElementById('amount11').value : '',
+            sticker: document.getElementById('imageSelect') ? document.getElementById('imageSelect').value : ''
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(favData));
+    };
+
+    window.loadFavorite = function() {
+        const savedStr = localStorage.getItem(STORAGE_KEY);
+        if (savedStr) {
+            const favData = JSON.parse(savedStr);
+            
+            if(favData.noteMode !== undefined) {
+                const mc = document.getElementById('modeSwitch');
+                if (mc) {
+                    mc.checked = favData.noteMode;
+                    if(typeof toggleMode === 'function') toggleMode();
+                }
+            }
+            if(favData.noteText && document.getElementById('AideMemoire')) document.getElementById('AideMemoire').value = favData.noteText;
+            
+            if(favData.sName && document.getElementById('sendername')) document.getElementById('sendername').value = favData.sName;
+            if(favData.sAccount && document.getElementById('senderaccount')) document.getElementById('senderaccount').value = favData.sAccount;
+            if(favData.rName && document.getElementById('receivername')) document.getElementById('receivername').value = favData.rName;
+            if(favData.rAccount && document.getElementById('receiveraccount')) document.getElementById('receiveraccount').value = favData.rAccount;
+            
+            if(favData.bank && document.getElementById('bank')) document.getElementById('bank').value = favData.bank;
+            if(favData.amount && document.getElementById('amount11')) document.getElementById('amount11').value = favData.amount;
+            if(favData.sticker && document.getElementById('imageSelect')) document.getElementById('imageSelect').value = favData.sticker;
+            
+            if(window.updateDisplay) window.updateDisplay();
+        } else {
+            alert('⚠️ คุณยังไม่ได้บันทึกรายการโปรด');
+        }
+    };
 </script>
 
 <script src="js/slipkcimb.js"></script>
